@@ -6,6 +6,9 @@ nextflow.enable.dsl = 2
 // Import modules
 //
 include { EXTRACT_SEQUENCE } from './modules/local/extract_sequence'
+include { FASTQC } from './modules/nf-core/fastqc' 
+include {SEQUENCE_LENGTH} from './modules/local/sequence_length'
+include {REVERSE_COMPLEMENT} from './modules/local/reverse_complement'
 
 //
 // Define inputs and other parameters (these can also be provided in the nextflow.config file)
@@ -37,5 +40,11 @@ workflow {
     // Extract sequences from FASTQ files
     //
     EXTRACT_SEQUENCE(read_ch)
+    FASTQC(read_ch)
+    SEQUENCE_LENGTH(EXTRACT_SEQUENCE.out.sequence)
+    if (params.rev) {
+        REVERSE_COMPLEMENT(EXTRACT_SEQUENCE.out.sequence)
+    }
+
 
 }
